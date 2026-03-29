@@ -1,20 +1,11 @@
 services:
-  gateway:
-    build:
-      context: .
-      dockerfile: Dockerfile.gateway
-    ports:
-      - "18566:18566"
-    depends_on:
-      - image-service
-      - video-service
-    restart: unless-stopped
-
   image-service:
     build: .
+    ports:
+      - "${IMAGE_SERVICE_PORT:-18566}:18566"
     environment:
-      - JIMENG_BASE_URL=http://8.209.250.40:5100
-      - SERVER_PORT=18765
+      - JIMENG_BASE_URL=${IMAGE_JIMENG_BASE_URL:-http://8.209.250.40:5100}
+      - SERVER_PORT=18566
       - DATA_FILE=/data/data.json
     volumes:
       - ./data/image:/data
@@ -22,9 +13,11 @@ services:
 
   video-service:
     build: .
+    ports:
+      - "${VIDEO_SERVICE_PORT:-18567}:18567"
     environment:
-      - JIMENG_BASE_URL=http://8.209.250.40:5100
-      - SERVER_PORT=18765
+      - JIMENG_BASE_URL=${VIDEO_JIMENG_BASE_URL:-http://8.209.250.40:5100}
+      - SERVER_PORT=18567
       - DATA_FILE=/data/data.json
     volumes:
       - ./data/video:/data

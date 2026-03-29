@@ -81,6 +81,8 @@ session_pool = {
     }
 }
 
+DEFAULT_LOCAL_JIMENG_URL = "http://localhost:5100"
+
 
 def normalize_session_record(session_id: str, info: Optional[dict]) -> dict:
     """补齐旧数据缺失字段，统一 session 结构。"""
@@ -123,6 +125,11 @@ def load_data():
                     }
                 if "settings" in loaded:
                     session_pool["settings"].update(loaded["settings"])
+                    persisted_url = session_pool["settings"].get("jimeng_base_url")
+                    # 兼容旧 data.json 中写死 localhost 的情况，避免 Docker 新部署时
+                    # 被历史配置覆盖回容器内不可达的地址。
+                    if persisted_url == DEFAULT_LOCAL_JIMENG_URL and JIMENG_BASE_URL != DEFAULT_LOCAL_JIMENG_URL:
+                        session_pool["settings"]["jimeng_base_url"] = JIMENG_BASE_URL
                 console.print(f"[green]✅ 已加载 {len(session_pool['sessions'])} 个Session[/green]")
     except Exception as e:
         console.print(f"[yellow]⚠️ 加载数据失败: {e}[/yellow]")
