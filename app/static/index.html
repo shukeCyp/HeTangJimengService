@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>即梦 API Dashboard</title>
+    <link rel="stylesheet" href="./static/dashboard.css">
+</head>
+<body>
+    <div class="connection-status disconnected" id="connectionStatus">
+        <span class="status-dot"></span>
+        <span id="statusText">连接中...</span>
+    </div>
+    
+    <div class="container">
+        <header class="header">
+            <h1>🎨 即梦 API Dashboard</h1>
+            <p class="subtitle">OpenAI 兼容接口监控面板</p>
+            <div class="backend-url">即梦后端: <span id="backendUrl">-</span></div>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card total">
+                <div class="number" id="totalCalls">0</div>
+                <div class="label">总请求数</div>
+            </div>
+            <div class="stat-card success">
+                <div class="number" id="successCalls">0</div>
+                <div class="label">成功</div>
+            </div>
+            <div class="stat-card failed">
+                <div class="number" id="failedCalls">0</div>
+                <div class="label">失败</div>
+            </div>
+            <div class="stat-card rate">
+                <div class="number" id="successRate">-</div>
+                <div class="label">成功率</div>
+            </div>
+        </div>
+        
+        <!-- Sessions 管理 -->
+        <div class="sessions-section">
+            <div class="sessions-header">
+                <h2>🔑 Session 池</h2>
+                <div class="actions">
+                    <button class="btn btn-success" data-action="enable-all-sessions">✅ 解禁所有账户</button>
+                    <button class="btn btn-primary" data-action="toggle-upload">📁 导入Session</button>
+                    <button class="btn btn-secondary" data-action="show-settings">⚙️ 设置</button>
+                    <button class="btn btn-danger" data-action="clear-sessions">🗑️ 清空</button>
+                </div>
+            </div>
+            <div class="sessions-stats">
+                <span>总数: <span class="value" id="sessionTotal">0</span></span>
+                <span>可用: <span class="value" id="sessionAvailable">0</span></span>
+                <span>禁用: <span class="value" id="sessionDisabled">0</span></span>
+                <span>失败阈值: <span class="value" id="maxFailCount">3</span></span>
+            </div>
+            <div id="uploadArea" class="upload-area is-hidden">
+                <input type="file" id="fileInput" accept=".txt">
+                <div class="icon">📄</div>
+                <p>点击或拖拽文件到此处</p>
+                <p class="helper-text">支持格式: email=xxx----password=xxx----sessionid=xxx;</p>
+            </div>
+            <table class="sessions-table" id="sessionsTable">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Session ID</th>
+                        <th>失败次数</th>
+                        <th>状态</th>
+                        <th>最后使用</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="sessionsBody">
+                    <tr>
+                        <td colspan="6" class="empty-cell">
+                            暂无Session，点击"导入Session"添加
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- 分页控件 -->
+            <div class="pagination-container" id="paginationContainer"></div>
+        </div>
+
+        <!-- 设置弹窗 -->
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <h3>⚙️ 设置</h3>
+                <label>即梦API服务地址</label>
+                <input type="text" id="settingsJimengUrl" class="settings-text-input" placeholder="http://localhost:5100">
+                <label>Session前缀（发送请求时添加）</label>
+                <input type="text" id="settingsSessionPrefix" class="settings-text-input" placeholder="hk-">
+                <label>最大失败次数（超过后自动禁用）</label>
+                <input type="number" id="settingsMaxFail" min="1" max="100" value="3">
+                <div class="settings-buttons">
+                    <button class="btn btn-secondary" data-action="close-settings">取消</button>
+                    <button class="btn btn-primary" data-action="save-settings">保存</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="calls-section">
+            <div class="calls-header">
+                <h2>📋 调用记录</h2>
+                <button class="clear-btn" data-action="clear-calls">清空记录</button>
+            </div>
+            <table class="calls-table">
+                <thead>
+                    <tr>
+                        <th>请求ID</th>
+                        <th>时间</th>
+                        <th>模型</th>
+                        <th>Session</th>
+                        <th>提示词</th>
+                        <th>状态</th>
+                        <th>耗时</th>
+                        <th>结果</th>
+                    </tr>
+                </thead>
+                <tbody id="callsBody">
+                    <tr class="empty-row">
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <div class="icon">📭</div>
+                                <p>暂无调用记录</p>
+                                <p class="empty-subtext">等待API请求...</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="modal" id="imageModal">
+        <span class="modal-close" data-action="close-modal">&times;</span>
+        <img id="modalImage" src="" alt="Generated Image">
+    </div>
+    
+    <script src="./static/dashboard.js"></script>
+</body>
+</html>
